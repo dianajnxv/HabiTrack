@@ -1,0 +1,444 @@
+{% extends 'master.html' %}
+
+{% block title %}Home Page{% endblock %}
+
+{% block style %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styless.css' %}">
+{% endblock %} 
+
+{% block script %}
+    {% load static %}
+    <script src="{% static 'js/change_theme.js' %}"></script>
+    <script src="{% static 'js/quotes.js' %}"></script>
+    {% comment %} <script src="{% static 'js/script.js' %}"></script> {% endcomment %}
+
+
+{% endblock %}
+
+{% block content %}
+    <div id="quote-container" class="quote-container">
+      <p id="quote"></p>
+    </div>
+
+    <section id="section" class="intro-section">
+
+        <nav class="navbar">
+
+            <img src="static/img/logo.png" alt="logo-image" class="navbar-logo">
+
+            {% if user.is_authenticated %}
+
+                <ul class="navbar-menu">
+                    <li><a href="#aboutUs">About Us</a></li>
+                    <li>
+                      <button class="nav-link btn btn-link" data-bs-toggle="modal" data-bs-target="#addHabit">Add Habit</button>
+                    </li>                    
+                    <li><a href="{% url 'schedule' %}">Schedule</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                    <li><a href="#contacts">Contacts</a></li>
+                </ul>
+
+                <a href="{% url 'profile' user.username %}" class="btn btn-register">Profile</a>
+                <a href="{% url 'logout' %}" class="btn btn-register">Logout</a>
+
+            {% else %}
+
+                <ul class="navbar-menu">
+                    <li><a href="{% url 'login' %}">About Us</a></li>
+                    <li><a href="{% url 'login' %}">Add Habit</a></li>
+                    <li><a href="{% url 'login' %}">Schedule</a></li>
+                    <li><a href="{% url 'login' %}">Testimonials</a></li>
+                    <li><a href="{% url 'login' %}">Contacts</a></li>
+                </ul>
+
+                <a href="{% url 'register' %}" class="btn btn-register">Register</a>
+
+            {% endif %}
+
+            <div class="theme-toggle">
+              <button id="theme-button">
+                  <i class="fa fa-paint-brush"></i>
+              </button>
+              <div id="dropdown" class="dropdown-content">
+                  <button id="light-theme"><i class="fa fa-sun-o"></i> Light</button>
+                  <button id="dark-theme"><i class="fa fa-moon-o"></i> Dark</button>
+                  <button id="motivating-theme"><i class="fa fa-fire"></i> Motivating</button>
+              </div>
+          </div>
+
+        </nav>
+
+         <div class="overlay">
+            <div class="content">
+                <h1>Welcome to HabiTrack</h1>
+                <p>Your ultimate tracker for habits and hobbies. Start tracking, stay motivated, and achieve your goals.</p>
+            </div>
+         </div>
+    </section>
+
+        <section class="about">
+            <div class='overlay2'>
+                <h2>About Us</h2>
+                <p class="about-text">This site helps you create and track habits, <br>
+                    plan activities and motivate yourself to achieve. <br>
+                    You can easily organize your day, receive reminders <br>
+                    and see your progress in a convenient format. Our tools <br>
+                    will help you stay on track with your goals and develop <br>
+                    healthy habits.
+                </p>
+                {% if user.is_authenticated %}
+                    <button class="add-habit-button" type="button" data-bs-toggle="modal" data-bs-target="#addHabit">Add habit</button>
+                {% else %}
+                    <a href='{% url 'login' %}' class="add-habit-button">Add habit</a>
+                {% endif %}
+            </div>
+            <div class="about-image">
+                <img src="static/img/about-image.jpg" alt="About image" class="about-image">
+              </div>
+        </section>
+
+            <!-- ПЕРШЕ МОДАЛЬНЕ ВІКНО -->
+            <div class="modal fade" id="addHabit" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalToggleLabel">Start tracking habit</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style='width: 5%; height: 5%'>&#10006</button>
+                  </div>
+                  <div class="modal-body">
+                    <form>
+                      <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" id="recipient-name" placeholder="Meditate">
+                      </div>
+                      <div class="mb-3">
+                        <label for="message-text" class="col-form-label">Category:</label>
+                        <select class="form-control" id="message-text">
+                            {% for category in category_list %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn btn-dark" data-bs-target="#modalSetDays" data-bs-toggle="modal">Set Days</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ДРУГЕ МОДАЛЬНЕ ВІКНО -->
+            <div class="modal fade" id="modalSetDays" aria-hidden="true" aria-labelledby="modalSetDaysLabel" tabindex="-1">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalSetDaysLabel">Set Days</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style='width: 5%; height: 5%'>&#10006</button>
+                  </div>
+                  <div class="modal-body">
+                    <form>
+                      <div class="mb-3">
+                        <label for="days-input" class="col-form-label">Choose days:</label>
+
+                        <input type="checkbox" class="btn-check" id="Monday" checked autocomplete="off">
+                            <label class="btn day-circle" for="Monday">M</label>
+
+                        <input type="checkbox" class="btn-check" id="Tuesday" checked autocomplete="off">
+                            <label class="btn day-circle" for="Tuesday">T</label>
+
+                        <input type="checkbox" class="btn-check" id="Wednesday" checked autocomplete="off">
+                            <label class="btn day-circle" for="Wednesday">W</label>
+
+                        <input type="checkbox" class="btn-check" id="Thursday" checked autocomplete="off">
+                            <label class="btn day-circle" for="Thursday">T</label>
+
+                        <input type="checkbox" class="btn-check" id="Friday" checked autocomplete="off">
+                            <label class="btn day-circle" for="Friday">F</label>
+
+                        <input type="checkbox" class="btn-check" id="Saturday" checked autocomplete="off">
+                            <label class="btn day-circle" for="Saturday">S</label>
+
+                        <input type="checkbox" class="btn-check" id="Sunday" checked autocomplete="off">
+                            <label class="btn day-circle" for="Sunday">S</label>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn btn-outline-dark" data-bs-target="#addHabit1" data-bs-toggle="modal">Back to first</button>
+                    <button class="btn btn-dark" data-bs-target="#modalSetPriority" data-bs-toggle="modal">Set Priority</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ТРЕТЄ МОДАЛЬНЕ ВІКНО -->
+            <div class="modal fade" id="modalSetPriority" aria-hidden="true" aria-labelledby="modalSetPriorityLabel" tabindex="-1">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalSetPriorityLabel">Set Priority</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style='width: 5%; height: 5%'>&#10006</button>
+                  </div>
+                  <div class="modal-body">
+                    <form>
+                      <div class="mb-3">
+                        <label for="priority-input" class="col-form-label">Priority:</label>
+                        <select class="form-select" id="priority-input">
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                        </select>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn btn-outline-dark" data-bs-target="#modalSetDays" data-bs-toggle="modal">Back to days</button>
+                    <button class="btn btn-dark" data-bs-target="#modalSummary" data-bs-toggle="modal">Next</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ЧЕТВЕРТЕ МОДАЛЬНЕ ВІКНО -->
+            <div class="modal fade" id="modalSummary" aria-hidden="true" aria-labelledby="modalSummaryLabel" tabindex="-1">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                <form id="finalForm" method="POST" action="{% url 'habit_create' %}">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalSummaryLabel">Summary</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style='width: 5%; height: 5%'>&#10006</button>
+                  </div>
+                  <div class="modal-body">
+                      <!-- Поле для вводу імені -->
+                      <div class="mb-3">
+                        <label for="final-name" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" id="final-name" value="">
+                      </div>
+
+                      <!-- Поле для вибору категорії -->
+                      <div class="mb-3">
+                        <label for="final-category" class="col-form-label">Category:</label>
+                        <select class="form-control" id="final-category">
+                          {% for category in category_list %}
+                          <option value="{{ category.id }}">{{ category.name }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+
+                      <!-- Вибір днів -->
+                      <div class="mb-3">
+                        <label for="final-days" class="col-form-label">Choose days:</label>
+                        <div id="final-days">
+                          <input type="checkbox" class="btn-check" id="final-Monday" autocomplete="off">
+                          <label class="btn day-circle" for="final-Monday">M</label>
+
+                          <input type="checkbox" class="btn-check" id="final-Tuesday" autocomplete="off">
+                          <label class="btn day-circle" for="final-Tuesday">T</label>
+
+                          <input type="checkbox" class="btn-check" id="final-Wednesday" autocomplete="off">
+                          <label class="btn day-circle" for="final-Wednesday">W</label>
+
+                          <input type="checkbox" class="btn-check" id="final-Thursday" autocomplete="off">
+                          <label class="btn day-circle" for="final-Thursday">T</label>
+
+                          <input type="checkbox" class="btn-check" id="final-Friday" autocomplete="off">
+                          <label class="btn day-circle" for="final-Friday">F</label>
+
+                          <input type="checkbox" class="btn-check" id="final-Saturday" autocomplete="off">
+                          <label class="btn day-circle" for="final-Saturday">S</label>
+
+                          <input type="checkbox" class="btn-check" id="final-Sunday" autocomplete="off">
+                          <label class="btn day-circle" for="final-Sunday">S</label>
+                        </div>
+                      </div>
+
+                      <!-- Вибір пріоритету -->
+                      <div class="mb-3">
+                        <label for="final-priority" class="col-form-label">Priority:</label>
+                        <select class="form-select" id="final-priority">
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                        </select>
+                      </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn btn-outline-dark" data-bs-target="#modalSetPriority" data-bs-toggle="modal">Back</button>
+                    <button type="submit" class="btn btn-dark">Submit</button>
+                  </div>
+                </form>
+                </div>
+              </div>
+            </div>
+
+              <section class="tips-section">
+                <h2 class="tips-title">Top 3 порад для формування звичок</h2>
+                <p class="tips-subtitle">
+                  Поради, які допоможуть тобі втриматися на шляху формування нових звичок. Почни з малого, будь наполегливою — і результат не змусить себе чекати!
+                </p>
+
+                <div class="tips-container">
+
+                  <div class="tip-card" id="tip1">
+                    <div class="tip-overlay">
+                      <h3 class="tip-number">01.</h3>
+                      <h4 class="tip-heading">Почни з малого</h4>
+                      <p class="tip-text">5 хвилин на день — це вже успіх. Головне — регулярність.</p>
+                    </div>
+                  </div>
+
+                  <div class="tip-card" id="tip2">
+                    <div class="tip-overlay">
+                      <h3 class="tip-number">02.</h3>
+                      <h4 class="tip-heading">Прив’яжи звичку до рутини</h4>
+                      <p class="tip-text">Наприклад: “Після сніданку — 5 хвилин англійської”.</p>
+                    </div>
+                  </div>
+
+                  <div class="tip-card" id="tip3">
+                    <div class="tip-overlay">
+                      <h3 class="tip-number">03.</h3>
+                      <h4 class="tip-heading">Відмічай прогрес</h4>
+                      <p class="tip-text">Трекер звичок — чудовий спосіб бачити результат.</p>
+                    </div>
+                  </div>
+
+                </div>
+              </section>
+
+            <footer class="footer bg-dark text-white py-4">
+              <div class="container">
+                  <div class="row">
+                      <div class="col-md-3 mb-4">
+                          <img src="{% static 'img/logo.png' %}" alt="logoimage" class="footer-logo img-fluid mb-3">
+                          <p>Contact Us</p>
+                          <p>+38 99 999 999</p>
+                          <p><a href="mailto:habitrack.com" class="text-white text-decoration-none">habitrack.com</a></p>
+                      </div>
+                      <div class="col-md-3 mb-4">
+                          <h4>Information</h4>
+                          <ul class="list-unstyled">
+                              <li><a href="#" class="text-white text-decoration-none">About Us</a></li>
+                              <li><a href="#" class="text-white text-decoration-none">More Search</a></li>
+                              <li><a href="#" class="text-white text-decoration-none">Blog</a></li>
+                              <li><a href="#" class="text-white text-decoration-none">Events</a></li>
+                          </ul>
+                      </div>
+                      <div class="col-md-3 mb-4">
+                          <h4>Helpful Links</h4>
+                          <ul class="list-unstyled">
+                              <li><a href="#" class="text-white text-decoration-none">Add Habit</a></li>
+                              <li><a href="#" class="text-white text-decoration-none">Schedule</a></li>
+                          </ul>
+                      </div>
+                      <div class="col-md-3 mb-4">
+                          <h4>Subscribe More Info</h4>
+                          <form method="post" action="{% url 'subscribe' %}" class="d-flex flex-column">
+                            {% csrf_token %}
+                            
+                            <!-- email -->
+                            <label for="id_email">Enter your Email</label>
+                            {{ form.email }}  
+                            
+                            {% if form.email.errors %}
+                                <div class="error-message">
+                                    {% for error in form.email.errors %}
+                                        <p class="text-danger">{{ error }}</p>  
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            
+                            <button type="submit" class="btn custom-subscribe mt-2">Subscribe</button>
+                        </form>                                                
+                                                
+                      </div>
+                  </div>
+              </div>
+          
+              <div class="footer-bottom">
+                  <p>&copy; 2025 @ HabiTrack | All Rights Reserved</p>
+              </div>
+          </footer>
+          
+            
+            
+
+        <script>
+            document.addEventListener('show.bs.modal', function (event) {
+                if (event.target.id === 'modalSummary') {
+                    const nameInput = document.getElementById('recipient-name');
+                    const categoryInput = document.getElementById('message-text');
+                    const priorityInput = document.getElementById('priority-input');
+                    const finalNameInput = document.getElementById('final-name');
+                    const finalCategoryInput = document.getElementById('final-category');
+                    const finalPriorityInput = document.getElementById('final-priority');
+
+                    finalNameInput.value = nameInput ? nameInput.value : '';
+
+                    finalCategoryInput.value = categoryInput ? categoryInput.value : '';
+
+                    finalPriorityInput.value = priorityInput ? priorityInput.value : '';
+
+                    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                    days.forEach(day => {
+                        const originalCheckbox = document.getElementById(day);
+                        const finalCheckbox = document.getElementById(`final-${day}`);
+                        if (originalCheckbox && finalCheckbox) {
+                            finalCheckbox.checked = originalCheckbox.checked;
+                        }
+                    });
+                }
+            });
+
+            document.getElementById('finalForm').addEventListener('submit', async function (event) {
+                event.preventDefault(); 
+
+                const name = document.getElementById('final-name').value;
+                const category = document.getElementById('final-category').value;
+                const days = Array.from(document.querySelectorAll('#final-days input:checked')).map(input => input.id.replace('final-', '').toLowerCase());
+                const priority = document.getElementById('final-priority').value;
+
+                try {
+                    const response = await fetch('habits/create_habit', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken') // Django CSRF токен
+                        },
+                        body: JSON.stringify({ name, category, days, priority })
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        alert('Habit created successfully!');
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('modalSummary'));
+                        modal.hide();
+                    } else {
+                        alert(`Error: ${result.error}`);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Failed to create habit. Please try again.');
+                }
+            });
+
+            // Функція для отримання CSRF токена
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            } 
+         </script> 
+{% endblock %}
+

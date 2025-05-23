@@ -1,0 +1,118 @@
+:root {
+  --primary-white: #F4F8F8;
+  --primary-white-hover: #c1c4c4;
+  --main-color: #333333;
+  --color2: #929AAB;
+  --background-light: #F4F8F8;
+  --background-dark: #333333;
+  --text-light: #E4E0E1;
+  --text-dark: #333333;
+  --border-radius: 12px;
+  --transition-speed: 0.3s;
+}
+
+
+  body {
+  background-color: var(--background-light);
+  color: var(--text-dark);
+  font-family: 'Open Sans', sans-serif;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;    
+  justify-content: flex-start; 
+  align-items: center;        
+  min-height: 100vh;
+}
+
+
+h2 {
+  color: var(--main-color);
+  margin-bottom: 25px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+
+form {
+  background-color: var(--primary-white);
+  padding: 30px 35px;
+  border-radius: var(--border-radius);
+  box-shadow: 0 8px 20px rgba(57, 62, 70, 0.12);
+  max-width: 450px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: box-shadow var(--transition-speed);
+  margin-top: 60px;  
+
+}
+
+form:hover {
+  box-shadow: 0 12px 28px rgba(57, 62, 70, 0.18);
+}
+
+form p {
+  margin-bottom: 20px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.8px solid var(--color2);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  color: var(--text-dark);
+  background-color: var(--primary-white);
+  transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
+  box-sizing: border-box;
+  font-weight: 500;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--main-color);
+  box-shadow: 0 0 8px rgba(57, 62, 70, 0.3);
+  outline: none;
+}
+
+button[type="submit"] {
+  background-color: var(--main-color);
+  color: var(--primary-white);
+  border: none;
+  padding: 14px 30px;
+  border-radius: var(--border-radius);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
+  width: 100%;
+  margin-top: 20px;
+  letter-spacing: 0.05em;
+  box-shadow: 0 4px 10px rgba(57, 62, 70, 0.15);
+}
+
+button[type="submit"]:hover {
+  background-color: var(--color2);
+  box-shadow: 0 6px 15px rgba(57, 62, 70, 0.25);
+}
+
+a {
+  display: inline-block;
+  margin-top: 25px;
+  color: var(--main-color);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: color var(--transition-speed);
+  letter-spacing: 0.03em;
+}
+
+a:hover {
+  color: var(--color2);
+  text-decoration: underline;
+}

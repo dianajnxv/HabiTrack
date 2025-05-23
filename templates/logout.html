@@ -1,0 +1,37 @@
+{% extends 'master.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block style %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/home_light.css' %}">
+{% endblock %}
+
+{% block content %}
+
+    <div class="form-overlay">
+        <div class="form-container">
+            <form class="form active" method="post" action="{% url 'logout' %}">
+                <h2 style="text-align: center;">Confirm Logout?</h2>
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small class="form-text">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <p class="form-error" style="color: red;">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-danger" type="submit">Confirm</button>
+                    <a class="btn btn btn-outline-secondary" href="{% url 'home' %}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

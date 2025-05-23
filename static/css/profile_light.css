@@ -1,0 +1,401 @@
+:root {
+    --primary-white: #F4F8F8;
+    --primary-white-hover: #c1c4c4;
+    --main-color: #393E46;
+    --color2: #929AAB;
+    --background-light: #F4F8F8;
+    --background-dark: #393E46;
+    --text-light: #E4E0E1;
+    --text-dark: #393E46;
+    --motivating-color: #2A423A;
+    --motivating-text: #F4F8F8;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: var(--primary-white);
+    color: var(--main-color);
+    line-height: 1.5;
+    min-height: 100vh;
+}
+
+.header {
+    text-align: center;
+    background-color: var(--primary-white);
+    border-radius: 6px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.header button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    color: var(--main-color);
+}
+
+.layout {
+    display: grid;
+    margin: 0 auto;
+    gap: 24px;
+    padding: 24px;
+    max-width: 1280px;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    position: sticky;
+    top: 24px;
+    height: fit-content;
+}
+
+.profile-info {
+    margin-bottom: 16px;
+}
+
+.profile-name {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--main-color);
+    margin-bottom: 4px;
+}
+
+.profile-username {
+    font-size: 20px;
+    color: var(--main-color);
+}
+
+.nav-list {
+    list-style: none;
+    border-bottom: 1px solid var(--primary-white);
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 8px;
+    color: var(--main-color);
+    text-decoration: none;
+    border-radius: 6px;
+    margin-bottom: 4px;
+}
+
+.nav-item:hover {
+    background-color: #f6f8fa;
+}
+
+.nav-count {
+    margin-left: auto;
+    background-color: rgba(209, 213, 218, 0.5);
+    padding: 0 6px;
+    border-radius: 24px;
+    font-size: 12px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.profile-details {
+    list-style: none;
+    font-size: 14px;
+    color: var(--main-color);
+}
+
+.profile-details li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.profile-stats {
+    font-size: 14px;
+    color: #586069;
+    margin-bottom: 16px;
+}
+
+.follow-button {
+    width: 100%;
+    padding: 5px 16px;
+    font-size: 14px;
+    background-color: var(--primary-white);
+    border: 1px solid #e1e4e8;
+    color: #24292e;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Main Content Styles */
+.content {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: 1fr;
+}
+
+.profile-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 24px;
+}
+
+.profile-image {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.profile-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.bio-container {
+    background-color: var(--primary-white);
+    border-radius: 6px;
+    padding: 16px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.bio-header {
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+.bio-text {
+    color: var(--main-color);
+    margin-bottom: 16px;
+}
+
+.bio-text a {
+    color: var(--main-color);
+    text-decoration: none;
+}
+
+/* Achievements Section */
+.achievements {
+    background-color: var(--primary-white);
+    border-radius: 6px;
+    padding: 16px;
+    max-height: 300px;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    gap: 8px;
+    justify-content: center;
+}
+
+.achievement-badge {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+}
+
+.achievement-badge img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+/* Contribution Graph */
+.contributions {
+    background-color: var(--primary-white);
+    border-radius: 6px;
+    padding: 16px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.contributions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.contribution-graph {
+    height: 160px;
+    background-color: var(--primary-white);
+    border-radius: 6px;
+    display: grid;
+    grid-template-columns: repeat(52, 1fr);
+    gap: 2px;
+    padding: 8px;
+}
+
+.contribution-cell {
+    background-color: #40c463;
+    border-radius: 2px;
+    width: 10px;
+    height: 10px;
+    opacity: 0.2;
+}
+
+/* Repository Section */
+.repositories {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.repo-card {
+    background-color: var(--primary-white);
+    border-radius: 6px;
+    padding: 16px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(3, 2fr);
+    gap: 24px;
+}
+
+.stat-card {
+    text-align: center;
+    background-color: var(--primary-white);
+    border-radius: 6px;
+    padding: 16px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.chart {
+    background-color: var(--primary-white);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.chart h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--main-color);
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.chart canvas {
+    width: 100% !important;
+    height: auto !important; /* Updated height */
+    max-height: 300px;
+}
+
+#activityChart,
+#habitStatisticsChart {
+  border-radius: 16px;
+}
+
+.h3-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.diagrams-title {
+    font-size: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+  }
+
+  .profile-header {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-image {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .stats-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .achievements {
+    max-height: none; /*Removed max-height for larger screens*/
+  }
+}
+
+@media (max-width: 768px) {
+  .repositories {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+
+  .chart {
+    height: auto; /* Updated height */
+  }
+
+  .achievements-grid {
+    grid-template-columns: repeat(3, 64px);
+    justify-content: center;
+  }
+
+  .contribution-graph {
+    height: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    flex-direction: column;
+  }
+
+  .profile-name {
+    font-size: 20px;
+  }
+
+  .profile-username {
+    font-size: 16px;
+  }
+
+  .achievements-grid {
+    grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); /* Updated grid template */
+  }
+  .achievement-badge {
+    width: 48px;
+    height: 48px;
+  }
+
+  .contribution-graph {
+    height: 80px;
+  }
+
+  .repo-stats {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

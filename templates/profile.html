@@ -1,0 +1,493 @@
+{% extends 'master.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block style %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/profile_light.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+{% endblock %}
+
+{% block script %}
+    {% load static %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{% endblock %}
+
+{% block token %}
+    <meta name="csrfToken" content="{{ csrf_token }}">
+{% endblock %}
+
+{% block content %}
+    <div class="layout">
+        <div class="header">
+            <button onclick="history.back()" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <button class="btn-settings">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+
+        <main class="content">
+            <div class="profile-header">
+                <div class="profile-image">
+                    <img src="{{ user.avatar.url }}" alt="{{ user.username }}`s avatar" class="avatar">
+                </div>
+                <div class="bio-container">
+                    <h2 class="bio-header">{{ user.username }}</h2>
+                    <div class="email">{{ user.email }}</div>
+                    <div class="bio-text">{{ user.bio }}</div>
+                    <div class="action-buttons">
+                        {% if request.user.username == user.username %}
+                            <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#editProfile">Edit Profile</button>
+                        {% else %}
+                            <button class="btn btn-primary">Add Friend</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="icon">
+                        <i class="fas fa-chart-line fa-lg"></i>
+                    </div>
+                    <div class="value">{{ habits_count }}</div>
+                    <div class="label">Habits</div>
+                </div>
+                {% comment %} <div class="stat-card">
+                    <div class="icon">
+                        <i class="fas fa-users fa-lg"></i>
+                    </div>
+                    <div class="value">432</div>
+                    <div class="label">Friends</div>
+                </div> {% endcomment %}
+                <div class="stat-card">
+                    <div class="icon">
+                        <i class="fas fa-chart-pie fa-lg"></i>
+                    </div>
+                    <div class="value">89%</div>
+                    <div class="label">Success rate</div>
+                </div>
+            </div>
+
+            {% comment %} <div class="profile-header">
+                <section class="achievements">
+                    <div class="h3-title">
+                        <h3>Achievements</h3>
+                        <span>See all</span>
+                    </div>
+                    <div class="achievements-grid">
+                        <div class="achievement-badge" style="background: #FF6B6B"></div>
+                        <div class="achievement-badge" style="background: #4ECDC4"></div>
+                        <div class="achievement-badge" style="background: #45B7D1"></div>
+                        <div class="achievement-badge" style="background: #96CEB4"></div>
+                        <div class="achievement-badge" style="background: #D4A5A5"></div>
+                        <div class="achievement-badge" style="background: #9FA8DA"></div>
+                        <div class="achievement-badge" style="background: #FFE0B2"></div>
+                        <div class="achievement-badge" style="background: #80DEEA"></div>
+                        <div class="achievement-badge" style="background: #FF914D"></div>
+                        <div class="achievement-badge" style="background: #FF6384"></div>
+                        <div class="achievement-badge" style="background: #36B1B3"></div>
+                        <div class="achievement-badge" style="background: #F4C542"></div>
+                        <div class="achievement-badge" style="background: #F39C12"></div>
+                        <div class="achievement-badge" style="background: #B06AB3"></div>
+                        <div class="achievement-badge" style="background: #63C1BB"></div>
+                    </div> {% endcomment %}
+                </section>
+
+                <section class="contributions">
+                    <div class="contributions-header">
+                        <h3>Contribution Activity</h3>
+                        <span>Last month</span>
+                    </div>
+                    <canvas id="activityChart" height="75"></canvas>
+                </section>
+            </div>
+
+            <div class="stats-container">
+                <div class="chart">
+                    <div class="h3-title">
+                        <h3 class="diagrams-title">Success Rate</h3>
+                    </div>
+                    {% if success_rate_data.done == 0 and success_rate_data.missed == 0 and success_rate_data.skipped == 0 %}
+                        <h3>No Data For Stats</h3>
+                    {% else %}
+                        <canvas id="successRateChart"></canvas>
+                    {% endif %}
+                </div>
+                <div class="chart">
+                    <div class="h3-title">
+                        <h3 class="diagrams-title">Habits by Category</h3>
+                    </div>
+                    {% if habits_data %}
+                        <canvas id="habitDistributionChart"></canvas>
+                    {% else %}
+                        <h3>No Data For Stats</h3>
+                    {% endif %}
+                </div>
+                <div class="chart">
+                    <div class="h3-title">
+                        <h3 class="diagrams-title">Habits Statistics</h3>
+                    </div>
+                    {% if statistics_data %}
+                        <canvas id="habitStatisticsChart" height="550"></canvas>
+                    {% else %}
+                        <h3>No Data For Stats</h3>
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ПЕРШЕ МОДАЛЬНЕ ВІКНО -->
+    <div class="modal fade" id="editProfile" aria-hidden="true" aria-labelledby="exampleModalToggleLabel">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <form id="edit-profile" action="{% url 'edit_profile' username=user.username %}" method="POST">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalToggleLabel">Edit Profile</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style='width: 5%; height: 5%'>&#10006</button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="new-username" class="col-form-label">Username:</label>
+                <input type="text" class="form-control" id="new-username" placeholder="New username" value="{{ user.username }}" required>
+              </div>
+              <div class="mb-3">
+                <label for="new-bio" class="col-form-label">Bio:</label>
+                <input type="text" class="form-control" id="new-bio" placeholder="New bio..." {% if user.bio %}value="{{ user.bio }}"{% endif %}>
+              </div>
+              <div>
+                <label for="new-avatar" class="col-form-label">Avatar:</label>
+                <input type="file" class="form-control" id="new-avatar">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button id="cancel-button" class="btn btn-outline-dark" data-bs-target="#modalSetPriority" data-bs-toggle="modal">Cancel</button>
+              <button type='submit' class="btn btn-dark">Save changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+
+    <script>
+        // Додаємо обробник події для кнопки Cancel
+        document.getElementById('cancel-button').addEventListener('click', function() {
+            // Очищаємо форму до початкового стану
+            document.getElementById('edit-profile').reset();
+
+            // Можна також видалити повідомлення про помилки (якщо є)
+            const errorMessage = document.querySelector('.text-danger');
+            if (errorMessage) {
+              errorMessage.remove();
+            }
+        });
+
+        document.getElementById('edit-profile').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const old_username = '{{ user.username }}';
+            const new_username = document.getElementById('new-username').value;
+            const bio = document.getElementById('new-bio').value;
+            const avatar = document.getElementById('new-avatar').files[0];
+            const formData = new FormData();
+            formData.append('new_username', new_username);
+            formData.append('bio', bio);
+            formData.append('avatar', avatar);
+            formData.append('_method', 'PUT');
+
+            try {
+                const response = await fetch(`${old_username}/edit_profile`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+                console.log(result);
+                if (result.status === 'success') {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editProfile'));
+                    modal.hide();
+                    window.location.href = result.redirect_url;
+
+                } else {
+                    if (result.username_error) {
+                        const usernameField = document.getElementById('new-username');
+                        const usernameErrorMessage = document.createElement('div');
+                        usernameErrorMessage.classList.add('text-danger');
+                        usernameErrorMessage.classList.add('username-error');
+                        usernameErrorMessage.innerText = result.username_error;
+                        usernameField.parentElement.appendChild(usernameErrorMessage);
+                    }
+                    if (result.bio_error) {
+                        const bioField = document.getElementById('new-bio');
+                        const bioErrorMessage = document.createElement('div');
+                        bioErrorMessage.classList.add('text-danger');
+                        bioErrorMessage.classList.add('bio-error');
+                        bioErrorMessage.innerText = result.bio_error;
+                        bioField.parentElement.appendChild(bioErrorMessage);
+                    }
+                    if (result.avatar_error) {
+                        const avatarField = document.getElementById('new-avatar');
+                        const avatarErrorMessage = document.createElement('div');
+                        avatarErrorMessage.classList.add('text-danger');
+                        avatarErrorMessage.classList.add('avatar-error');
+                        avatarErrorMessage.innerText = result.avatar_error;
+                        avatarField.parentElement.appendChild(avatarErrorMessage);
+                    }
+                }
+            } catch(error) {
+                console.error('Error:', error);
+                alert('Failed to edit profile. Please try again.')
+            }
+        });
+
+        // Видалити помилку при зміні значення в полі username
+        document.getElementById('new-username').addEventListener('input', function() {
+            const usernameErrorMessage = document.querySelector('.username-error');
+            if (usernameErrorMessage) {
+                usernameErrorMessage.remove();
+            }
+        });
+
+        document.getElementById('new-bio').addEventListener('input', function() {
+            const bioErrorMessage = document.querySelector('.bio-error');
+            if (bioErrorMessage) {
+                bioErrorMessage.remove();
+            }
+        });
+
+        document.getElementById('new-avatar').addEventListener('input', function() {
+            const avatarErrorMessage = document.querySelector('.avatar-error');
+            if (avatarErrorMessage) {
+                avatarErrorMessage.remove();
+            }
+        });
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+
+    <script>
+        // Дані з бекенду
+        const successRateData = {{ success_rate_data|safe }};
+        const habitsData = {{ habits_data|safe }};
+        const statisticsData = {{ statistics_data|safe }};
+        const activityData = {{ activity_data|safe }};
+
+        const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#666',
+                            font: {
+                                size: 14,
+                            },
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            boxWidth: 4,
+                            boxHeight: 6
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(229,229,229,0.9)',
+                        titleColor: '#1a1a1a',
+                        bodyColor: '#666',
+                        bodyFont: {
+                            size: 12
+                        },
+                        borderColor: '#e1e4e8',
+                        borderWidth: 1,
+                        boxPadding: 6,
+                        usePointStyle: true
+                    }
+                }
+            };
+
+        if (!Object.values(successRateData).every(value => value === 0)) {
+            // Графік прогресу за тиждень
+            const successRateCtx = document.getElementById('successRateChart').getContext('2d');
+            new Chart(successRateCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Done', 'Missed', 'Skipped'],
+                    datasets: [{
+                        data: [successRateData.done, successRateData.missed, successRateData.skipped],
+                        backgroundColor: [
+                            'rgb(95, 211, 138)', // Зелений - Done
+                            'rgb(255, 96, 93)', // Червоний - Missed
+                            'rgb(154, 156, 155)' // Сірий - Skipped
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    cutout: '70%',
+                    plugins: {
+                        ...chartOptions.plugins,
+                        tooltip: {
+                            ...chartOptions.plugins.tooltip,
+                            callbacks: {
+                                label: function (context) {
+                                    const value = context.raw;
+                                    const total = successRateData.done + successRateData.missed + successRateData.skipped;
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${context.label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        if (Array.isArray(habitsData) && habitsData.length > 0) {
+            // Кругова діаграма розподілу звичок
+            const habitDistributionCtx = document.getElementById('habitDistributionChart').getContext('2d');
+            new Chart(habitDistributionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: habitsData.map(item => item.category__name),
+                    datasets: [{
+                        data: habitsData.map(item => item.count),
+                        backgroundColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 206, 86)',
+                            'rgb(75, 192, 192)',
+                            'rgb(153, 102, 255)'
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    cutout: '70%'
+                }
+            });
+        }
+
+        if (Array.isArray(statisticsData) && statisticsData.length > 0) {
+            // Графік статистики виконання звичок
+            const habitStatisticsCtx = document.getElementById('habitStatisticsChart').getContext('2d');
+            new Chart(habitStatisticsCtx, {
+                type: 'bar',
+                data: {
+                    labels: statisticsData.map(item => item.habit__name),
+                    datasets: [{
+                        label: 'Виконано',
+                        data: statisticsData.map(item => item.completed),
+                        backgroundColor: 'rgb(75, 192, 192)'
+                    }, {
+                        label: 'Всього',
+                        data: statisticsData.map(item => item.total),
+                        backgroundColor: 'rgb(255, 99, 132)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#666',
+                                font: {
+                                    size: 14,
+                                },
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                boxWidth: 4,
+                                boxHeight: 6
+                            },
+                        },
+                    }
+                }
+            });
+        }
+
+        const activityChart = document.getElementById('activityChart').getContext('2d');
+
+        new Chart(activityChart, {
+            type: 'line',
+            data: {
+                labels: activityData.labels,
+                datasets: [{
+                    data: activityData.data,
+                    fill: false,
+                    borderColor: 'rgb(104,192,75)',
+                    tension: 0.1,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    title: {
+                        display: false,
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: false,
+                        },
+                        ticks: {
+                            display: false, // Приховуємо мітки на осі X
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Activity by day'
+                        },
+                        ticks: {
+                            beginAtZero: true,
+                            stepSize: 1,
+                            min: 0, // Примусово встановлюємо мінімум шкали Y на 0
+                        }
+                    }
+                },
+                elements: {
+                    line: {
+                        borderColor: 'rgba(255, 99, 132, 1)', // Колір лінії
+                        borderWidth: 2, // Товщина лінії
+                        fill: false, // Без заповнення під лінією
+                    }
+                }
+            }
+        });
+
+    </script>
+{% endblock %}

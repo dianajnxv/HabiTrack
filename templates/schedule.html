@@ -1,0 +1,273 @@
+{% extends 'home.html' %}
+{% load static %}
+
+{% block title %}Schedule and Habits{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/schedule.css' %}" />
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+
+<a href="{% url 'home' %}">
+  <button class="btn-back">←</button>
+</a>
+
+<h2>My habits</h2>
+
+<div class="habits">
+{% for habit in habits %}
+  <div class="habits__card">
+    <h3 class="habits__title">{{ habit.name }}</h3>
+    <p class="habits__category">Category: {{ habit.category.name }}</p>
+    <p class="habits__priority">Priority: {{ habit.get_priority_display }}</p>
+    <p class="habits__days">Days: {{ habit.get_frequency_display }}</p>
+    <p class="habits__status">Status: <strong>{{ habit.get_status_display }}</strong></p>
+
+    <!-- Status -->
+    <form action="{% url 'toggle_status' habit.id %}" method="post" class="habits__form-inline">
+      {% csrf_token %}
+      <button type="submit" class="btn-status">Edit status</button>
+    </form>
+
+    <!-- Edit -->
+    <a href="{% url 'habit_edit' habit.id %}">
+      <button class="btn-edit">Edit</button>
+    </a>
+
+    <!-- Delete -->
+    <form action="{% url 'habit_delete' habit.id %}" method="post" class="habits__form-inline">
+      {% csrf_token %}
+      <button type="submit" class="btn-delete" onclick="return confirm('Delete habit?')">Delete</button>
+    </form>
+  </div>
+{% empty %}
+  <p>You don't have habits yet.</p>
+{% endfor %}
+</div>
+
+<hr />
+
+<h2>Task Calendar</h2>
+
+<div class="task-calendar__container mt-4">
+  <div id="task-calendar"></div>
+</div>
+
+<!-- Add Task Modal -->
+<div id="taskModal" class="task-calendar__modal" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%);
+     background:white; border:1px solid #ccc; padding:20px; z-index: 1000;">
+  <h3>Add Task on <span id="selectedDate"></span></h3>
+  <form id="taskForm" class="task-calendar__form">
+    <input type="hidden" id="taskDate" name="date" />
+    <div>
+      <label for="taskTitle">Task:</label><br />
+      <input type="text" id="taskTitle" name="title" required />
+    </div>
+    <button type="submit" class="btn-add">Add</button>
+    <button type="button" id="closeModal" class="btn-cancel">Cancel</button>
+  </form>
+</div>
+
+<!-- Edit Task Modal -->
+<div id="editTaskModal" class="task-calendar__modal" style="display:none; position:fixed; top:20%; left:50%; transform:translateX(-50%);
+     background:white; border:1px solid #ccc; padding:20px; z-index: 1000;">
+  <h3>Edit Task</h3>
+  <form id="editTaskForm" class="task-calendar__form">
+    <input type="hidden" id="editTaskId" name="id" />
+    <div>
+      <label for="editTaskTitle">Task:</label><br />
+      <input type="text" id="editTaskTitle" name="title" required />
+    </div>
+    <button type="submit" class="btn-save">Save</button>
+    <button type="button" id="deleteTaskBtn" class="btn-delete">Delete</button>
+    <button type="button" id="closeEditModal" class="btn-cancel">Cancel</button>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  const calendarEl = document.getElementById('task-calendar');
+  const taskModal = document.getElementById('taskModal');
+  const selectedDateEl = document.getElementById('selectedDate');
+  const taskForm = document.getElementById('taskForm');
+  const taskDateInput = document.getElementById('taskDate');
+  const taskTitleInput = document.getElementById('taskTitle');
+  const closeModalBtn = document.getElementById('closeModal');
+
+  const editTaskModal = document.getElementById('editTaskModal');
+  const editTaskForm = document.getElementById('editTaskForm');
+  const editTaskIdInput = document.getElementById('editTaskId');
+  const editTaskTitleInput = document.getElementById('editTaskTitle');
+  const deleteTaskBtn = document.getElementById('deleteTaskBtn');
+  const closeEditModalBtn = document.getElementById('closeEditModal');
+
+  const csrftoken = getCookie('csrftoken');
+
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    selectable: true,
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+    },
+    dateClick: function(info) {
+      selectedDateEl.textContent = info.dateStr;
+      taskDateInput.value = info.dateStr;
+      taskTitleInput.value = '';
+      taskModal.style.display = 'block';
+    },
+    events: '/api/tasks/',
+
+    eventClick: function(info) {
+      const event = info.event;
+      if (!event.id) {
+        alert('Error: Task without ID');
+        return;
+      }
+
+      editTaskIdInput.value = event.id;
+      editTaskTitleInput.value = event.title;
+      editTaskModal.style.display = 'block';
+      editTaskModal.currentEvent = event;
+    }
+  });
+
+  calendar.render();
+
+  // Клік на завдання — відкриваємо модалку редагування
+  {% comment %} calendarEl.addEventListener('click', function(event) {
+    const calendarApi = calendar;
+    const eventEl = event.target.closest('.fc-event');
+
+    if (!eventEl) return;
+
+    const eventObj = calendarApi.getEventById(eventEl.getAttribute('data-event-id'));
+    if (!eventObj) return;
+
+    // Відкриваємо модалку редагування
+    editTaskIdInput.value = eventObj.id;
+    editTaskTitleInput.value = eventObj.title;
+    editTaskModal.style.display = 'block';
+
+    // Запам’ятовуємо event для оновлення/видалення
+    editTaskModal.currentEvent = eventObj;
+  }); {% endcomment %}
+
+  // Збереження редагування
+  editTaskForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const id = editTaskIdInput.value.trim();
+    const newTitle = editTaskTitleInput.value.trim();
+
+    if (!id) {
+      alert('Missing task ID');
+      return;
+    }
+
+    if (!newTitle) {
+      alert('Task title cannot be empty');
+      return;
+    }
+
+    fetch(`/api/tasks/edit/${id}/`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken
+      },
+      body: JSON.stringify({ title: newTitle })
+    })
+    .then(res => {
+      if (res.ok) {
+        editTaskModal.currentEvent.setProp('title', newTitle);
+        editTaskModal.style.display = 'none';
+      } else {
+        alert('Failed to update task');
+      }
+    })
+    .catch(() => alert('Network error'));
+  });
+  
+
+  // Видалення завдання з модалки
+  deleteTaskBtn.addEventListener('click', function() {
+    const id = editTaskIdInput.value;
+
+    if (confirm('Delete this task?')) {
+      fetch(`/api/tasks/delete/${id}/`, {
+        method: 'DELETE',
+        headers: {
+          'X-CSRFToken': csrftoken,
+        }
+      })
+      .then(res => {
+        if (res.ok) {
+          editTaskModal.currentEvent.remove();
+          editTaskModal.style.display = 'none';
+        } else {
+          alert('Failed to delete task');
+        }
+      })
+      .catch(() => alert('Network error'));
+    }
+  });
+
+  // Закриття модального вікна редагування
+  closeEditModalBtn.addEventListener('click', () => {
+    editTaskModal.style.display = 'none';
+  });
+
+  // Додавання нового завдання — без змін
+  taskForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const title = taskTitleInput.value.trim();
+    const date = taskDateInput.value;
+
+    if (title && date) {
+      fetch('/api/tasks/add/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken
+        },
+        body: JSON.stringify({title: title, date: date})
+      }).then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            calendar.refetchEvents();
+            taskModal.style.display = 'none';
+          } else {
+            alert('Error while adding task');
+          }
+        });
+    }
+  });
+
+  // Закриття модалки додавання завдання — без змін
+  closeModalBtn.addEventListener('click', () => {
+    taskModal.style.display = 'none';
+  });
+});
+</script>
+{% endblock %}
