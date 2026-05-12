@@ -28,21 +28,6 @@ body {
     background-color: var(--background-light);
 }
 
-body.light-theme {
-    background-color: var(--background-light);
-    color: var(--text-dark);
-}
-
-body.dark-theme {
-    background-color: var(--background-dark);
-    color: var(--text-light);
-}
-
-body.motivating-theme {
-    background-color: var(--motivating-color);
-    color: var(--motivating-text);
-}
-
 .navbar {
     display: flex;
     align-items: center;
@@ -202,14 +187,16 @@ section h2 {
 
 .form-overlay {
     position: fixed;
-    justify-items: center;
-    align-content: center;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.8);
     z-index: 20;
+    /* Додаємо ці три рядки для центрування */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .form-container {

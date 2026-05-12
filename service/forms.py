@@ -1,18 +1,25 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+import re
 
-# Отримуємо кастомну модель користувача
+from .models import Habit
+
 User = get_user_model()
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True, label="Email")
 
-    class Meta:
+    class Meta(UserCreationForm.Meta):
         model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = ("username", "email")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].help_text = None
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -27,14 +34,9 @@ class CustomAuthenticationForm(AuthenticationForm):
         'invalid_login': _(
             "Your username or password is incorrect. Please try again."
         ),
-        'inactive': _("This account is inactive."),
+        'inactive': _("This account is authenticated but inactive."),
     }
-    
-    
-#subscribe
-from django import forms
-from django.core.exceptions import ValidationError
-import re
+
 
 class SubscribeForm(forms.Form):
     email = forms.EmailField(
@@ -44,24 +46,20 @@ class SubscribeForm(forms.Form):
             'placeholder': 'Enter your Email'
         })
     )
-    
+
     def clean_email(self):
         email = self.cleaned_data.get('email')
 
-        # Перевірка на порожнє поле
         if not email:
             raise ValidationError("This field is required.")
 
-        # Перевірка на правильний формат email
         if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
             raise ValidationError("Enter a valid email address.")
 
         return email
 
-from django import forms
-from .models import Habit
 
 class HabitForm(forms.ModelForm):
     class Meta:
         model = Habit
-        fields = '__all__'  # або перелік конкретних полів
+        fields = '__all__'

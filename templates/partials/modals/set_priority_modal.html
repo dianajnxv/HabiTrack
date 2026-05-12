@@ -1,0 +1,26 @@
+<div class="modal fade" id="modalSetPriority" aria-hidden="true" aria-labelledby="modalSetPriorityLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalSetPriorityLabel">Set Priority</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style='width: 5%; height: 5%'>&#10006</button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="priority-input" class="col-form-label">Priority:</label>
+            <select class="form-select" id="priority-input">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-dark" data-bs-target="#modalSetDays" data-bs-toggle="modal">Back to days</button>
+        <button class="btn btn-dark" data-bs-target="#modalSummary" data-bs-toggle="modal">Next</button>
+      </div>
+    </div>
+  </div>
+</div>

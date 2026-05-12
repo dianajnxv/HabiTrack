@@ -1,0 +1,34 @@
+<div class="modal fade" id="modalSetDays" aria-hidden="true" aria-labelledby="modalSetDaysLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalSetDaysLabel">Set Days</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style='width: 5%; height: 5%'>&#10006</button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="days-input" class="col-form-label">Choose days:</label>
+                        {% for day, short in days %}
+                        <input
+                        type="checkbox"
+                        class="btn-check"
+                        id="{{ day }}"
+                        checked
+                        autocomplete="off">
+                        <label
+                        class="btn day-circle"
+                        for="{{ day }}">
+                        {{ short }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline-dark" data-bs-target="#addHabit1" data-bs-toggle="modal">Back to first</button>
+            <button class="btn btn-dark" data-bs-target="#modalSetPriority" data-bs-toggle="modal">Set Priority</button>
+        </div>
+    </div>
+</div>
+</div>

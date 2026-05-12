@@ -1,0 +1,19 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+    overflow-x: hidden;
+    width: 100%;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    position: relative;
+}

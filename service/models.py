@@ -1,57 +1,58 @@
 import random
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
+from datetime import date, timedelta
+from django.utils import timezone
+from django.db.models import Count, Q
 
-# Theme Choices for user interface customization
 class ThemeChoices(models.TextChoices):
     LIGHT = "light", "Light Theme"
     DARK = "dark", "Dark Theme"
     MOTIVATING = "motivating", "Motivating Theme"
 
-# Custom User Model
 class CustomUser(AbstractUser):
     bio = models.TextField(
         blank=True,
-        verbose_name='Bio',
-        help_text='Enter your bio',
         max_length=250
     )
     email = models.EmailField(
         unique=True,
-        verbose_name="Email Address",
-        help_text="Enter a unique email address.",
         db_index=True
     )
     google_calendar_integration = models.BooleanField(
-        default=False,
-        verbose_name="Google Calendar Integration",
-        help_text="Enable or disable Google Calendar integration."
+        default=False
     )
     theme = models.CharField(
         max_length=20,
         choices=ThemeChoices.choices,
-        default=ThemeChoices.LIGHT,
-        verbose_name="Theme",
-        help_text="Select a theme for your interface."
+        default=ThemeChoices.LIGHT
     )
     avatar = models.ImageField(
         upload_to='avatars/',
         blank=True,
-        default='avatars/avatar.jpg',
-        verbose_name="Avatar",
-        help_text="Upload a profile picture."
+        default='avatars/avatar.jpg'
     )
+
+    current_overall_streak = models.PositiveIntegerField(
+        default=0
+    )
+    best_overall_streak = models.PositiveIntegerField(
+        default=0
+    )
+    morning_lark_streak = models.PositiveIntegerField(
+        default=0
+    )
+
     groups = models.ManyToManyField(
         'auth.Group',
         related_name='customuser_set',
-        blank=True,
-        help_text='The groups this user belongs to.'
+        blank=True
     )
     user_permissions = models.ManyToManyField(
         'auth.Permission',
         related_name='customuser_set',
-        blank=True,
-        help_text='Specific permissions for this user.'
+        blank=True
     )
 
     class Meta:
@@ -61,10 +62,9 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
-# Category Model
 class Category(models.Model):
-    name = models.CharField(max_length=255, unique=True, verbose_name="Category Name")
-    description = models.TextField(blank=True, null=True, verbose_name="Description")
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True, null=True)
 
     class Meta:
         verbose_name = "Category"
@@ -74,7 +74,6 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-# Habit Model (merged definition)
 class Habit(models.Model):
     DAYS_OF_WEEK = [
         ('mon', 'Monday'),
@@ -86,38 +85,40 @@ class Habit(models.Model):
         ('sun', 'Sunday'),
     ]
 
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='habits')
-    name = models.CharField(max_length=255)
-    category = models.ForeignKey(
-        'Category',
-        on_delete=models.CASCADE,
-        related_name='habits',
-        verbose_name="Category",
-        help_text="Select a category for this habit."
-    )
-    priority = models.CharField(
-        max_length=10,
-        choices=[('low', 'Low'), ('medium', 'Medium'), ('high', 'High')],
-        default='medium',
-        verbose_name="Priority"
-    )
-    frequency = models.JSONField(
-        default=list,
-        verbose_name="Days of the Week",
-        help_text="Select the days for this habit."
-    )
     STATUS_CHOICES = [
         ('not_done', 'Not Done'),
         ('done', 'Done'),
         ('missed', 'Missed'),
     ]
+
+    PRIORITY_CHOICES = [
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High')
+    ]
+
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='habits')
+    name = models.CharField(max_length=255)
+    category = models.ForeignKey(
+        'Category',
+        on_delete=models.CASCADE,
+        related_name='habits'
+    )
+    priority = models.CharField(
+        max_length=10,
+        choices=PRIORITY_CHOICES,
+        default='medium'
+    )
+    frequency = models.JSONField(
+        default=list
+    )
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,
-        default='not_done',
-        verbose_name='Status'
+        default='not_done'
     )
 
+    last_completed = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -127,62 +128,75 @@ class Habit(models.Model):
         day_names = dict(self.DAYS_OF_WEEK)
         return ", ".join([day_names.get(day, day) for day in self.frequency])
 
-    
-    
-
-# # Schedule Model (merged definition)
 class Schedule(models.Model):
+    STATUS_CHOICES = [
+        ('completed', 'Completed'),
+        ('not_completed', 'Not Completed'),
+        ('skipped', 'Skipped')
+    ]
+
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='schedules')
     habit = models.ForeignKey(Habit, on_delete=models.CASCADE, related_name='schedules')
     date = models.DateField()
     time = models.TimeField()
     status = models.CharField(
-        max_length=20, 
-        choices=[('completed', 'Completed'), ('not_completed', 'Not Completed'), ('skipped', 'Skipped')], 
+        max_length=20,
+        choices=STATUS_CHOICES,
         default='not_completed'
     )
 
     def __str__(self):
         return f"{self.habit.name} on {self.date} at {self.time}"
 
-# Reminder Model
 class Reminder(models.Model):
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('inactive', 'Inactive')
+    ]
+
     schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE, related_name='reminders')
     email = models.EmailField()
     status = models.CharField(
         max_length=10,
-        choices=[('active', 'Active'), ('inactive', 'Inactive')],
+        choices=STATUS_CHOICES,
         default='active'
     )
 
     def __str__(self):
         return f"Reminder for {self.schedule.habit.name} ({self.status})"
 
-# Progress Model
 class Progress(models.Model):
+    STATUS_CHOICES = [
+        ('completed', 'Completed'),
+        ('not_completed', 'Not Completed'),
+        ('skipped', 'Skipped')
+    ]
+
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='progresses')
     habit = models.ForeignKey(Habit, on_delete=models.CASCADE, related_name='progresses')
     date = models.DateField()
     status = models.CharField(
         max_length=15,
-        choices=[('completed', 'Completed'), ('not_completed', 'Not Completed'), ('skipped', 'Skipped')],
+        choices=STATUS_CHOICES,
         default='not_completed'
     )
 
     def __str__(self):
         return f"{self.habit.name} on {self.date} - {self.status}"
 
-# Achievement Model
 class Achievement(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='achievements')
+    user_model = settings.AUTH_USER_MODEL
+
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
-    earned_at = models.DateTimeField(auto_now_add=True)
+    image_name = models.CharField(max_length=255)
+    key = models.CharField(max_length=50, unique=True)
+    users = models.ManyToManyField(user_model, related_name='achievements', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
 
-# Statistic Model
 class Statistic(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='statistics')
     habit = models.ForeignKey(Habit, on_delete=models.CASCADE, related_name='statistics')
@@ -193,15 +207,6 @@ class Statistic(models.Model):
     def __str__(self):
         return f"Stats for {self.habit.name} ({self.period})"
 
-# MotivationQuote Model
-class MotivationQuote(models.Model):
-    text = models.TextField()
-    author = models.CharField(max_length=255, blank=True, null=True)
-
-    def __str__(self):
-        return self.text
-
-# Theme Model
 class Theme(models.Model):
     name = models.CharField(max_length=50)
     style = models.TextField()
@@ -209,17 +214,27 @@ class Theme(models.Model):
     def __str__(self):
         return self.name
 
-
-#Calendar
-from django.db import models
-from django.contrib.auth.models import User
-from django.conf import settings
-
-
 class Task(models.Model):
+    PRIORITY_CHOICES = [
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High')
+    ]
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)                 # назва завдання
-    date = models.DateField()                                 # дата завдання
+    title = models.CharField(max_length=200)
+    date = models.DateField()
+    description = models.TextField(blank=True, null=True)
+    time = models.TimeField(null=True, blank=True)
+    is_completed = models.BooleanField(default=False)
+    priority = models.CharField(
+        max_length=10,
+        choices=PRIORITY_CHOICES,
+        default='medium'
+    )
+
+    class Meta:
+        ordering = ['date', 'time']
 
     def __str__(self):
         return f"{self.title} on {self.date}"

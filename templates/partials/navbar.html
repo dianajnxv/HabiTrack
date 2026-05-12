@@ -1,0 +1,40 @@
+{% load static %}
+<nav class="navbar">
+    <div class="navbar-left">
+        <img id="logo-img" src="{% static 'images/logo-white.png' %}" alt="LumosFlow" class="navbar-logo">
+    </div>
+
+    <ul class="navbar-menu">
+        <li><a href="/#aboutUs">About Us</a></li>
+        {% if user.is_authenticated %}
+            <li><button class="nav-link-btn" data-bs-toggle="modal" data-bs-target="#addHabit">Add Habit</button></li>
+            <li><a href="{% url 'schedule' %}">Schedule</a></li>
+        {% endif %}
+        <li><a href="/#testimonials">Testimonials</a></li>
+        <li><a href="#contacts">Contacts</a></li>
+    </ul>
+
+    <div class="navbar-right">
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' user.username %}" class="btn-register-icon">
+                <i class="fa-solid fa-user"></i>
+                <span>Profile</span>
+            </a>
+        {% else %}
+            <a href="{% url 'register' %}" class="btn-register-icon">
+                <i class="fa-solid fa-user-plus"></i> <span>Register</span>
+            </a>
+        {% endif %}
+
+        <div class="theme-toggle">
+            <button id="theme-button" class="btn-theme-brush">
+                <i class="fa-solid fa-paintbrush"></i>
+            </button>
+            <div id="dropdown" class="dropdown-content">
+                <button id="light-button">Light</button>
+                <button id="dark-button">Dark</button>
+                <button id="motivational-button">Motivational</button>
+            </div>
+        </div>
+    </div>
+</nav>

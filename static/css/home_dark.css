@@ -25,21 +25,6 @@ body {
     background-color: var(--background-light);
 }
 
-body.light-theme {
-    background-color: var(--background-light);
-    color: var(--text-dark);
-}
-
-body.dark-theme {
-    background-color: var(--background-dark);
-    color: var(--text-light);
-}
-
-body.motivating-theme {
-    background-color: var(--motivating-color);
-    color: var(--motivating-text);
-}
-
 .navbar {
     display: flex;
     align-items: center;

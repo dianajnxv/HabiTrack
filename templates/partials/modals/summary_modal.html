@@ -1,0 +1,56 @@
+<div class="modal fade" id="modalSummary" aria-hidden="true" aria-labelledby="modalSummaryLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="finalForm" method="POST" action="{% url 'habit_create' %}">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="modalSummaryLabel">Summary</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style='width: 5%; height: 5%'>&#10006</button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="final-name" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" id="final-name" value="">
+                    </div>
+                    <div class="mb-3">
+                        <label for="final-category" class="col-form-label">Category:</label>
+                        <select class="form-control" id="final-category">
+                            {% for category in category_list %}
+                            <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="final-days" class="col-form-label">Choose days:</label>
+                        <div id="final-days">
+                            {% for day, short in days %}
+                            <input
+                            type="checkbox"
+                            class="btn-check"
+                            id="{{ day }}"
+                            checked
+                            autocomplete="off">
+                            <label
+                            class="btn day-circle"
+                            for="{{ day }}">
+                            {{ short }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="final-priority" class="col-form-label">Priority:</label>
+                    <select class="form-select" id="final-priority">
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline-dark" data-bs-target="#modalSetPriority" data-bs-toggle="modal">Back</button>
+                <button type="submit" class="btn btn-dark">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>

@@ -1,0 +1,105 @@
+/* static/css/chat.css */
+#ai-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 2000;
+}
+
+#ai-open-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #3a3a3c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s;
+}
+
+#ai-open-btn:hover {
+    transform: scale(1.1);
+}
+
+#ai-chat-window {
+    display: none; /* Hidden by default */
+    position: absolute;
+    bottom: 75px;
+    right: 0;
+    width: 320px;
+    height: 450px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    flex-direction: column;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.chat-header {
+    padding: 15px;
+    background: #1d1d1f;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+}
+
+#chat-content {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+    background: #f9f9f9;
+}
+
+.chat-input-area {
+    padding: 10px;
+    border-top: 1px solid #eee;
+    display: flex;
+    background: white;
+}
+
+#chat-input {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 8px 15px;
+    outline: none;
+}
+
+#chat-send {
+    margin-left: 8px;
+    background: #3a3a3c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+}
+
+/* Стилі повідомлень */
+.msg-user {
+    background: #3a3a3c;
+    color: white;
+    padding: 8px;
+    border-radius: 10px;
+    align-self: flex-end;
+    max-width: 80%;
+}
+
+.msg-ai {
+    background: #eee;
+    color: black;
+    padding: 8px;
+    border-radius: 10px;
+    align-self: flex-start;
+    max-width: 80%;
+}

@@ -1,0 +1,63 @@
+{% load static %}
+<footer id="contacts" class="footer py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3 mb-4">
+        <img src="{% static 'images/logo-white.png' %}" alt="HabiTrack" class="footer-logo img-fluid mb-3" style="max-height: 40px;">
+        <div class="contact-links">
+          <p class="mb-1"><a href="tel:+380999999999"><i class="fa-solid fa-phone me-2"></i> +38 099 999 999</a></p>
+          <p class="mb-1"><a href="mailto:info@habitrack.com"><i class="fa-solid fa-envelope me-2"></i> info@habitrack.com</a></p>
+          <div class="social-icons mt-3">
+            <a href="#" class="me-3"><i class="fa-brands fa-github"></i></a>
+            <a href="#" class="me-3"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-4">
+        <h4 class="mb-3">Information</h4>
+        <ul class="list-unstyled">
+          <li><a href="/#aboutUs">About Us</a></li>
+          <li><a href="/#testimonials">Testimonials</a></li>
+          <li><a href="#">Blog</a></li>
+        </ul>
+      </div>
+
+      <div class="col-md-3 mb-4">
+        <h4 class="mb-3">Helpful Links</h4>
+        <ul class="list-unstyled">
+          {% if user.is_authenticated %}
+            <li><a href="#" data-bs-toggle="modal" data-bs-target="#addHabit">Add Habit</a></li>
+            <li><a href="{% url 'schedule' %}">Schedule</a></li>
+          {% else %}
+            <li><a href="{% url 'login' %}">Login</a></li>
+            <li><a href="{% url 'register' %}">Register</a></li>
+          {% endif %}
+        </ul>
+      </div>
+
+      <div class="col-md-3 mb-4">
+        <h4 class="mb-3">Stay Updated</h4>
+        <form method="post" action="{% url 'subscribe' %}" class="subscribe-form">
+          {% csrf_token %}
+          <div class="mb-2">
+            {{ form.email }} 
+          </div>
+          {% if form.email.errors %}
+            {% for error in form.email.errors %}
+              <small class="text-danger d-block mb-2">{{ error }}</small>
+            {% endfor %}
+          {% endif %}
+          <button type="submit" class="btn btn-accent w-100">Subscribe</button>
+        </form>
+      </div>
+    </div>
+
+    <hr class="my-4" style="opacity: 0.1;">
+
+    <div class="footer-bottom text-center">
+      <p class="mb-0">&copy; 2026 HabiTrack | All Rights Reserved</p>
+    </div>
+  </div>
+</footer>

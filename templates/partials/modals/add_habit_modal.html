@@ -1,0 +1,29 @@
+<div class="modal fade" id="addHabit" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalToggleLabel">Start tracking habit</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style='width: 5%; height: 5%'>&#10006</button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="recipient-name" class="col-form-label">Name:</label>
+            <input type="text" class="form-control" id="recipient-name" placeholder="Meditate">
+          </div>
+          <div class="mb-3">
+            <label for="message-text" class="col-form-label">Category:</label>
+            <select class="form-control" id="message-text">
+              {% for category in category_list %}
+              <option value="{{ category.id }}">{{ category.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-dark" data-bs-target="#modalSetDays" data-bs-toggle="modal">Set Days</button>
+      </div>
+    </div>
+  </div>
+</div>

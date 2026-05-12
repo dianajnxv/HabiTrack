@@ -1,252 +1,291 @@
 :root {
-  --primary-white: #F4F8F8;
-  --just-white: #ffffff;
-  --primary-white-hover: #c1c4c4;
-  --main-color: #333333;
-  --color2: #929AAB;
-  --background-light: #F4F8F8;
-  --background-dark: #333333;
-  --text-light: #E4E0E1;
-  --text-dark: #333333;
-  --delete-button: #929AAB;
-  --delete-hover: #c1c4c4;
+    --fc-border-color: rgba(146, 154, 171, 0.1);
+    --fc-button-bg-color: var(--accent-color);
+    --fc-button-border-color: transparent;
+    --fc-button-hover-bg-color: var(--accent-color);
+    --fc-button-hover-border-color: transparent;
+    --fc-button-active-bg-color: var(--accent-color);
+    --fc-button-active-border-color: transparent;
+    --fc-event-bg-color: var(--accent-color);
+    --fc-event-border-color: transparent;
+    --fc-today-bg-color: rgba(146, 154, 171, 0.15);
 }
 
 body {
-  font-family: 'Open Sans', sans-serif;
-  background-color: var(--background-light);
-  color: var(--text-dark);
-  margin: 0;
-  padding: 20px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Open Sans', sans-serif;
+    margin: 0;
+    padding: 20px;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h2 {
-  font-size: 2rem;
-  margin-bottom: 20px;
-  text-align: center;
-  color: var(--main-color);
+    font-size: 2rem;
+    margin-bottom: 30px;
+    text-align: center;
+    color: var(--text-color);
+    font-weight: 700;
 }
 
-a button,
-button {
-  background-color: var(--color2);
-  color: var(--primary-white);
-  padding: 8px 16px;
-  margin: 5px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  transition: background-color 0.3s ease;
+.fc-event.calendar-task-event {
+    background-color: var(--accent-color) !important;
+    color: var(--background-color) !important; /* Текст контрастний до акценту */
+    border: none !important;
 }
 
-button:hover,
-a button:hover {
-  background-color: var(--primary-white-hover);
-  color: var(--main-color);
+.fc-event.calendar-habit-event {
+    background-color: transparent !important; /* Прозорий фон */
+    border: 2px solid var(--accent-color) !important; /* Кольорова рамка */
+    color: var(--text-color) !important; /* Текст кольору теми */
+    font-weight: 700 !important;
 }
 
-a {
-  text-decoration: none;
+.fc-event.calendar-habit-event:hover {
+    background-color: var(--accent-color) !important;
+    color: var(--background-color) !important;
+    transition: 0.2s;
 }
 
-.habit-card {
-  background-color: var(--primary-white);
-  border: 1px solid var(--color2);
-  border-left: 6px solid var(--main-color);
-  border-radius: 10px;
-  padding: 20px;
-  margin: 20px auto;
-  max-width: 600px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+.fc-event.calendar-habit-event .fc-event-title,
+.fc-event.calendar-habit-event .fc-event-time {
+    color: var(--text-color) !important;
 }
 
-.habit-card h3 {
-  margin-top: 0;
-  font-size: 1.5rem;
-  color: var(--main-color);
+.habits-carousel {
+    position: relative;
+    width: 100%;
+    padding: 0 40px;
+    box-sizing: border-box;
 }
 
-.habit-card p {
-  margin: 6px 0;
-  line-height: 1.4;
+.carousel-container {
+    overflow: hidden;
+    width: 100%;
 }
 
-strong {
-  color: var(--main-color);
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    will-change: transform;
 }
 
-form {
-  display: inline;
+.habit-card-wrapper {
+    flex: 0 0 33.333%;
+    padding: 10px;
+    box-sizing: border-box;
 }
 
-form button {
-  background-color: var(--main-color);
-  color: var(--primary-white);
+.habits__card {
+    background-color: var(--dropdown-bg);
+    border: 1px solid rgba(146, 154, 171, 0.2);
+    border-radius: 24px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+    border-left: 6px solid #ccc;
 }
 
-form button:hover {
-  background-color: var(--color2);
+.habits__card:hover {
+    transform: translateY(-5px);
 }
 
-form button[type="submit"]:last-of-type {
-  background-color: var(--delete-button);
-  color: var(--primary-white);
+.habits__card.priority-high { border-left-color: #ff4d4d; }
+.habits__card.priority-medium { border-left-color: #ffcc00; }
+.habits__card.priority-low { border-left-color: #00cc66; }
+
+.habits__top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
 }
 
-form button[type="submit"]:last-of-type:hover {
-  background-color: var(--delete-hover);
-  color: var(--main-color);
+.category-badge {
+    background: var(--background-color);
+    color: var(--description-color);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: 1px solid rgba(146, 154, 171, 0.2);
 }
 
-.container {
-  max-width: 900px;
-  margin: 20px auto;
-  background-color: var(--just-white);
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+.habits__header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
 }
 
-#calendar {
-  font-family: 'Open Sans', sans-serif;
-  color: var(--main-color);
+.habits__title {
+    margin: 0;
+    font-size: 1.3rem;
+    color: var(--text-color);
 }
 
-.fc-header-toolbar {
-  margin-bottom: 15px;
+.status-indicator {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 28px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
 }
 
-.fc-toolbar-title {
-  font-size: 1.7rem;
-  font-weight: 700;
-  color: var(--main-color, var(--main-color));
+.status-done { color: #28a745; }
+.status-missed { color: #dc3545; }
+.status-not-done { color: var(--description-color); opacity: 0.5; }
+
+/* --- Дні тижня --- */
+.habits__days-list {
+    display: flex;
+    gap: 8px;
 }
 
+.day-letter {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 8px;
+    background: var(--background-color);
+    color: var(--description-color);
+    opacity: 0.3;
+}
+
+.day-letter.active {
+    opacity: 1;
+    color: var(--accent-color);
+    border: 1px solid var(--accent-color);
+}
+
+/* --- Кнопки інтерфейсу --- */
+button, .btn-back, .btn-status, .btn-edit {
+    background-color: var(--accent-color);
+    color: var(--background-color);
+    padding: 10px 18px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: opacity 0.3s ease, transform 0.1s ease;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    color: var(--description-color);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: color 0.2s;
+}
+
+.action-btn.edit:hover { color: var(--accent-color); }
+.action-btn.delete:hover { color: #dc3545; }
+
+.carousel-btn {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50px;
+    background: transparent;
+    color: var(--text-color);
+    border: none;
+    font-size: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: transform 0.2s ease;
+    outline: none;
+}
+
+.carousel-btn:hover { transform: scale(1.2); }
+.carousel-btn.prev { left: -10px; }
+.carousel-btn.next { right: -10px; }
+
+/* --- FullCalendar: Кастомізація (Прибираємо синій колір) --- */
+#task-calendar {
+    background-color: var(--dropdown-bg);
+    border-radius: 24px;
+    padding: 20px;
+    border: 1px solid rgba(146, 154, 171, 0.2);
+}
+
+/* Кнопки календаря */
 .fc-button {
-  background-color: var(--color2, var(--main-color));
-  color: var(--just-white);
-  border: none;
-  border-radius: 6px;
-  padding: 6px 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  box-shadow: none;
+    background-color: var(--accent-color) !important;
+    color: var(--background-color) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+    outline: none !important;
 }
 
-.fc-button:hover,
-.fc-button:focus {
-  background-color: var(--primary-white-hover, var(--just-white));
-  color: var(--main-color, var(--main-color));
-  outline: none;
+.fc-button:hover {
+    opacity: 0.9 !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
 }
 
-.fc-button-primary:not(:disabled).fc-button-active,
-.fc-button-primary:not(:disabled):active {
-  background-color: var(--main-color, var(--main-color));
-  color: var(--just-white);
-  box-shadow: 0 0 10px var(--main-color, var(--main-color));
-}
-
+/* Дати та заголовки (прибираємо синій колір посилань) */
+.fc-daygrid-day-number, 
 .fc-col-header-cell-cushion {
-  font-weight: 600;
-  color: var(--color2, var(--main-color));
+    color: var(--text-color) !important;
+    text-decoration: none !important;
 }
 
-.fc-daygrid-day {
-  border: 1px solid var(--color2);
-  border-radius: 6px;
-  padding: 5px;
-  transition: background-color 0.2s ease;
-}
-
-.fc-daygrid-day:hover {
-  background-color: var(--color2);
-  cursor: pointer;
-}
-
-.fc-day-today {
-  background-color: var(--main-color, var(--main-color));
-  color: var(--just-white);
-  font-weight: 700;
-  border-radius: 6px;
-}
-
+/* Події в календарі */
 .fc-event {
-  background-color: var(--color2, var(--main-color));
-  border: none;
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 0.85rem;
-  color: var(--just-white);
-  cursor: pointer;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
-  transition: background-color 0.3s ease;
+    background-color: var(--accent-color) !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 2px 5px !important;
+    color: var(--background-color) !important;
 }
 
-.fc-event:hover {
-  background-color: var(--main-color, var(--color2));
+/* --- Модальні вікна та інше --- */
+.task-calendar__modal {
+    background-color: var(--dropdown-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid rgba(146, 154, 171, 0.3) !important;
+    border-radius: 24px !important;
+    padding: 30px !important;
+    width: 350px !important;
 }
 
-#taskModal {
-  width: 320px;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-  font-family: 'Open Sans', sans-serif;
-  background: var(--primary-white);
-  padding: 20px;
-  position: fixed;
-  top: 20%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
+.task-calendar__modal input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    background-color: var(--background-color);
+    border: 1px solid var(--description-color);
+    border-radius: 10px;
+    color: var(--text-color);
 }
 
-#taskModal h3 {
-  margin-top: 0;
-  margin-bottom: 12px;
-  color: var(--main-color, var(--main-color));
-  font-weight: 700;
+hr {
+    border: 0;
+    border-top: 1px solid var(--description-color);
+    opacity: 0.2;
+    margin: 40px 0;
 }
 
-#taskModal label {
-  font-weight: 600;
-  display: block;
-  margin-bottom: 6px;
+/* --- Адаптивність --- */
+@media (max-width: 992px) {
+    .habit-card-wrapper { flex: 0 0 50%; }
 }
 
-#taskModal input[type="text"] {
-  width: 100%;
-  padding: 8px 10px;
-  margin-bottom: 15px;
-  border: 1px solid var(--color2);
-  border-radius: 6px;
-  font-size: 1rem;
-  box-sizing: border-box;
-}
-
-#taskModal button {
-  background-color: var(--color2, var(--main-color));
-  color: var(--just-white);
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  margin-right: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.3s ease;
-}
-
-#taskModal button:hover {
-  background-color: var(--main-color, var(--color2));
-}
-
-#taskModal button#closeModal {
-  background-color: var(--color2);
-  color: var(--main-color);
-}
-
-#taskModal button#closeModal:hover {
-  background-color: var(--color2);
+@media (max-width: 600px) {
+    .habits-carousel { padding: 0 30px; }
+    .habit-card-wrapper { flex: 0 0 100%; }
+    .carousel-btn { width: 30px; font-size: 30px; }
 }

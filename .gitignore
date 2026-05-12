@@ -16,3 +16,4 @@ __pycache__/
 # Системні файли
 .DS_Store
 Thumbs.db
+.env
